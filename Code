@@ -1,0 +1,59 @@
+val inputfile = sc.textFile("InputFolder/alice-1.txt")
+val stopwordsfile = sc.textFile("InputFolder/stopwords.csv")
+
+val words = inputfile.flatMap(x => x.split("\\W+"))
+val stopwords = stopwordsfile.flatMap(line => line.split(","))
+
+val lcwords = words.map(x => x.toLowerCase())
+val lcstopwords = stopwords.map(x => x.toLowerCase())
+
+val wordstuple = lcwords.map(x => (x,1))
+val stopwordstuple = lcstopwords.map(x => (x,1))
+
+val new_words = wordstuple.subtractByKey(stopwordstuple)
+
+val final_words = new_words.keys
+
+
+val words_list = final_words.filter(_!="")
+
+val newwords = words_list.map(w => w.replaceAll("[^a-zA-Z\\s]"," "))
+
+val wordMap = newwords.map(word => (word,1))
+System.out.println(wordMap.collect().mkString("\n"))
+
+val wordCount = wordMap.reduceByKey(_+_)
+System.out.println(wordCount.collect().mkString("\n"))
+
+val Part1_output = wordCount.sortBy(-_._2).take(200)
+
+val Part1=sc.parallelize(Part1_output)
+
+Part1.saveAsTextFile("OutputFolder_Part1")
+
+
+val freq  = newwords.map(word => (word.charAt(0),word.length))
+
+val gb=freq.groupBy(_._1)
+
+val avg=gb.map{case(char,charList)=>(char,charList.size,charList.map(_._2).sum)}
+
+//val filter = avg.filter(_._2 !=111)
+
+val final_avg = avg.map(anum => (anum._1, anum._3.asInstanceOf[Double]/anum._2))
+
+val Part2_output = final_avg.sortBy(-_._1)
+
+System.out.println(Part2_output.collect().mkString("\n"))
+
+Part2_output.saveAsTextFile("OutputFolder_Part2")
+
+val count_avg = avg.map(anum => (anum._1,anum._2,anum._3.asInstanceOf[Double]/anum._2))
+
+val Part3_output = count_avg.sortBy(-_._3).take(10)
+
+System.out.println(Part3_output.mkString("\n"))
+
+val Part3=sc.parallelize(Part3_output)
+
+Part3.saveAsTextFile("OutputFolder_Part3")
