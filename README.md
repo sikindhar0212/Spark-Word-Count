@@ -25,4 +25,4 @@ EOF
 
 Go to top right corner and select power button -> power off
 
-Log in to remote desktop again. Now your spark path is set and you can type "spark-shell" in terminal to access spark.\ You can access spark by typing absolute path "/opt/spark/bin/spark-shell" also.
+Now your spark path is set and you can type "spark-shell" in terminal to access spark.\ You can access spark by typing absolute path "/opt/spark/bin/spark-shell" also.
